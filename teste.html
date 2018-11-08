@@ -1,0 +1,92 @@
+<html ng-app="app">
+
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+        crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+</head>
+
+<body ng-controller="pessoaController">
+    <div class="jumbotron">
+        <div ng-show="!cadastro">
+            <div class="row" ng-show="!listaPessoas.length">
+                Nenhuma Pessoa Cadastrada
+            </div>
+            <table ng-show="listaPessoas.length && !cadastro" class="table table-striped">
+                <tr>
+                    <th>NOME</th>
+                    <th>SEXO</th>
+                    <th>EXCLUIR</th>
+                    <th>EDITAR</th>
+                </tr>
+                <tr ng-repeat="pessoa in listaPessoas track by $index">
+                    <td>{{pessoa.nome}}</td>
+                    <td>{{pessoa.sexo.genero}}</td>
+                    <td>
+                        <button class="btn btn-danger" ng-click="deletar(pessoa)">[X]</button>
+                    </td>
+                    <td>
+                        <button class="btn btn-warning" ng-click="editar($index, pessoa)">[O]</button>
+                    </td>
+                </tr>
+            </table>
+            <br>
+            <button class="btn btn-primary" ng-click="cadastro = true">Cadastrar</button>
+        </div>
+        <div ng-show="cadastro">
+                <form name="pessoaForm">
+                        <input class="form-control" name="nome" ng-model="pessoa.nome" ng-required="true" />
+                        <select class="form-control" ng-model="pessoa.sexo" ng-options="sexo.genero for sexo in sexos" ng-required="true">
+                            <option value="">Insira o Genero</option>
+                        </select>
+                        <br>
+                        <br>
+                        
+                        <br>
+                        <div ng-show="pessoaForm.$invalid" class="alert alert-danger">
+                            PREENCHA TODOS OS CAMPOS
+                        </div>
+                    </form>
+                    <button class="btn btn-success" ng-click="inserir(pessoa); cadastro = false" ng-disabled="pessoaForm.$invalid">Salvar</button>
+        </div>
+    </div>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.5/angular.min.js"></script>
+
+</html>
+<script>
+    angular.module("app", []);
+    angular.module("app").controller("pessoaController", function ($scope) {
+        $scope.cadastro = false;
+        $scope.pessoa = {};
+        $scope.listaPessoas = [
+        ];
+        $scope.sexos = [
+            { genero: "Masculino" },
+            { genero: "Feminino" }
+        ]
+        $scope.inserir = function (pessoa) {
+            if ($scope.pessoaSelecionada != null && !angular.isUndefined($scope.pessoaSelecionada)) {
+                $scope.listaPessoas.splice($scope.pessoaSelecionada, 1, $scope.pessoa)
+            } else {
+                $scope.listaPessoas.push(angular.copy(pessoa));
+                console.log($scope.listaPessoas);
+            }
+            $scope.pessoa = {};
+            $scope.pessoaSelecionada = null;
+        }
+        $scope.deletar = function (pessoa) {
+            $scope.listaPessoas.splice(pessoa, 1);
+        }
+        $scope.editar = function (index, pessoa) {
+            $scope.pessoaSelecionada = index;
+            $scope.pessoa = pessoa;
+            $scope.cadastro = true;
+        }
+    })
+</script>
